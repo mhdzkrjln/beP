@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+
+# Environment variables (SANGAT PENTING untuk backend)
+.env
+.env.*
+!.env.example
+
+# User uploaded files / media
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
