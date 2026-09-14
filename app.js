@@ -22,10 +22,6 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.urlencoded({ extended: true }));
 
-// Route sederhana
-// app.get("/", (req, res) => {
-//   res.json({ message: "Server Express berjalan." });
-// });
 app.use('/auth', authRoute)
 app.use('/user', userRoute)
 app.use('/categories', categoryRoute)
