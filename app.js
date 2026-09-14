@@ -16,7 +16,6 @@ const reportRoute = require('./routes/report.routes')
 const app = express();
 const db = require('./models')
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

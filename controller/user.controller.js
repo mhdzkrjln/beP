@@ -105,79 +105,6 @@ module.exports = {
     }
   },
 
-  // getAll: async (req, res) => {
-  //   try {
-  //     const {
-  //       search = "",
-  //       role,
-  //       is_active,
-  //       page = 1,
-  //       limit = 4,
-  //       sortBy = "id",
-  //       sortOrder = "ASC",
-  //     } = req.query;
-
-  //     const offset = (Number(page) - 1) * Number(limit);
-
-  //     const where = {
-  //       deleted_at: null,
-  //     };
-
-  //     if (search) {
-  //       where[Op.or] = [
-  //         { name: { [Op.like]: `%${search}%` } },
-  //         { username: { [Op.like]: `%${search}%` } },
-  //         { no_telp: { [Op.like]: `%${search}%` } },
-  //       ];
-  //     }
-
-  //     if (role) {
-  //       where.role = role;
-  //     }
-
-  //     if (is_active !== undefined) {
-  //       where.is_active = is_active === "true" || is_active === true;
-  //     }
-
-  //     const allowedSort = [
-  //       "id",
-  //       "name",
-  //       "username",
-  //       "role",
-  //       "is_active",
-  //       "createdAt",
-  //       "updatedAt",
-  //     ];
-
-  //     const safeSortBy = allowedSort.includes(sortBy) ? sortBy : "id";
-  //     const safeSortOrder = sortOrder.toUpperCase() === "ASC" ? "ASC" : "DESC";
-
-  //     const { count, rows } = await Users.findAndCountAll({
-  //       where,
-  //       attributes: {
-  //         exclude: ["password"],
-  //       },
-  //       order: [[safeSortBy, safeSortOrder]],
-  //       limit: Number(limit),
-  //       offset,
-  //     });
-
-  //     return res.status(200).json(
-  //       response(200, "Success", {
-  //         data: rows,
-  //         pagination: {
-  //           total: count,
-  //           page: Number(page),
-  //           limit: Number(limit),
-  //           totalPages: Math.ceil(count / Number(limit)),
-  //         },
-  //       }),
-  //     );
-  //   } catch (error) {
-  //     return res.status(500).json(response(500, "Server Error", error.message));
-  //   }
-  // },
-
   getAll: async (req, res) => {
     try {
       const {
@@ -196,16 +123,10 @@ module.exports = {
 
       const offset = (pageNumber - 1) * limitNumber;
 
-      // ==========================================
-      // WHERE
-      // ==========================================
       const where = {
         deleted_at: null,
       };
 
-      // ==========================================
-      // SEARCH
-      // ==========================================
       if (search) {
         where[Op.or] = [
           {
@@ -226,23 +147,14 @@ module.exports = {
         ];
       }
 
-      // ==========================================
-      // FILTER ROLE
-      // ==========================================
       if (role) {
         where.role = role;
       }
 
-      // ==========================================
-      // FILTER STATUS
-      // ==========================================
       if (is_active !== undefined) {
         where.is_active = is_active === "true" || is_active === true;
       }
 
-      // ==========================================
-      // SORT
-      // ==========================================
       const allowedSort = [
         "id",
         "name",
@@ -258,9 +170,6 @@ module.exports = {
       const safeSortOrder =
         String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-      // ==========================================
-      // PAGINATION DATA
-      // ==========================================
       const { count, rows } = await Users.findAndCountAll({
         where,
 
@@ -274,9 +183,6 @@ module.exports = {
         offset,
       });
 
-      // ==========================================
-      // GLOBAL STATISTICS
-      // ==========================================
       const total = await Users.count({
         where: {
           deleted_at: null,
@@ -297,9 +203,6 @@ module.exports = {
         },
       });
 
-      // ==========================================
-      // RESPONSE
-      // ==========================================
       return res.status(200).json(
         response(200, "Data pengguna berhasil diambil", {
           data: rows,
@@ -349,76 +252,12 @@ module.exports = {
     }
   },
 
-  // update: async (req, res) => {
-  //   try {
-  //     const { id } = req.params;
-  //     const { name, username, password, role, no_telp, is_active } = req.body;
-
-  //     const user = await Users.findOne({
-  //       where: {
-  //         id,
-  //         deleted_at: null,
-  //       },
-  //     });
-
-  //     if (!user) {
-  //       return res.status(404).json(response(404, "User not found"));
-  //     }
-
-  //     if (username && username !== user.username) {
-  //       const existingUser = await Users.findOne({
-  //         where: {
-  //           username,
-  //           deleted_at: null,
-  //           id: {
-  //             [Op.ne]: id,
-  //           },
-  //         },
-  //       });
-
-  //       if (existingUser) {
-  //         return res
-  //           .status(409)
-  //           .json(response(409, "Username sudah digunakan"));
-  //       }
-  //     }
-
-  //     const updateData = {
-  //       name: name ?? user.name,
-  //       username: username ?? user.username,
-  //       role: role ?? user.role,
-  //       no_telp: no_telp ?? user.no_telp,
-  //       is_active: is_active !== undefined ? is_active : user.is_active,
-  //     };
-
-  //     if (password) {
-  //       updateData.password = await bcrypt.hash(password, 10);
-  //     }
-
-  //     await user.update(updateData);
-
-  //     const result = user.toJSON();
-  //     delete result.password;
-
-  //     return res
-  //       .status(200)
-  //       .json(response(200, "User berhasil diupdate", result));
-  //   } catch (error) {
-  //     return res
-  //       .status(500)
-  //       .json(response(500, "Server Error", error.message));
-  //   }
-  // },
-
   update: async (req, res) => {
     try {
       const { id } = req.params;
 
       const { name, username, password, role, no_telp, is_active } = req.body;
 
-      // ==========================================
-      // FIND USER
-      // ==========================================
       const user = await Users.findOne({
         where: {
           id,
@@ -430,9 +269,6 @@ module.exports = {
         return res.status(404).json(response(404, "User not found"));
       }
 
-      // ==========================================
-      // CHECK USERNAME
-      // ==========================================
       if (username && username.trim() !== user.username) {
         const existingUser = await Users.findOne({
           where: {
@@ -452,9 +288,6 @@ module.exports = {
         }
       }
 
-      // ==========================================
-      // NORMALIZE STATUS
-      // ==========================================
       let activeValue = user.is_active;
 
       if (is_active !== undefined) {
@@ -467,9 +300,6 @@ module.exports = {
         }
       }
 
-      // ==========================================
-      // UPDATE DATA
-      // ==========================================
       const updateData = {
         name: name !== undefined ? name.trim() : user.name,
 
@@ -482,21 +312,11 @@ module.exports = {
         is_active: activeValue,
       };
 
-      // ==========================================
-      // PASSWORD
-      // ==========================================
       if (password && password.trim()) {
         updateData.password = await bcrypt.hash(password, 10);
       }
 
-      // ==========================================
-      // SAVE
-      // ==========================================
       await user.update(updateData);
-
-      // ==========================================
-      // RESPONSE
-      // ==========================================
       const result = user.toJSON();
 
       delete result.password;

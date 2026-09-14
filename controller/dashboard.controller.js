@@ -122,7 +122,6 @@ module.exports = {
           date.getDate() + 1,
         );
 
-        // Surat masuk
         const inmail = await Inmails.count({
           where: {
             deleted_at: null,
@@ -133,7 +132,6 @@ module.exports = {
           },
         });
 
-        // Surat keluar
         const outmail = await Outmails.count({
           where: {
             deleted_at: null,
@@ -144,7 +142,6 @@ module.exports = {
           },
         });
 
-        // Matsus
         const matsus = await Matsus.count({
           where: {
             deleted_at: null,
@@ -155,7 +152,6 @@ module.exports = {
           },
         });
 
-        // Peminjaman
         const borrowing = await BorrowingDetails.count({
           where: {
             createdAt: {

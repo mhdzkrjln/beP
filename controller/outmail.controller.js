@@ -28,7 +28,6 @@ module.exports = {
 
       const file = req.file ? req.file.filename : null;
 
-      // Validasi data wajib
       if (
         !no_mail ||
         !date_mail ||
@@ -54,7 +53,6 @@ module.exports = {
           );
       }
 
-      // Validasi classification
       if (
         classification &&
         !["Internal", "External"].includes(classification)
@@ -70,7 +68,6 @@ module.exports = {
           );
       }
 
-      // Cek nomor surat
       const existingMail = await Outmails.findOne({
         where: {
           no_mail: no_mail.trim(),
@@ -88,7 +85,6 @@ module.exports = {
           .json(response(400, "Nomor surat sudah tersedia"));
       }
 
-      // Simpan data
       const data = await Outmails.create({
         no_mail: no_mail.trim(),
         date_mail,
@@ -107,7 +103,6 @@ module.exports = {
         .status(201)
         .json(response(201, "Surat keluar berhasil dibuat", data));
     } catch (error) {
-      // Hapus file jika proses database gagal
       if (req.file) {
         deleteFile(req.file.filename);
       }
@@ -147,19 +142,16 @@ module.exports = {
 
       const where = {};
 
-      // Surat aktif
       if (status === "active") {
         where.deleted_at = null;
         where.is_arsip = false;
       }
 
-      // Surat arsip
       if (status === "archive") {
         where.deleted_at = null;
         where.is_arsip = true;
       }
 
-      // Surat terhapus
       if (status === "deleted") {
         where.deleted_at = {
           [Op.not]: null,
@@ -168,7 +160,6 @@ module.exports = {
         where.is_arsip = false;
       }
 
-      // Search
       if (search.trim() !== "") {
         where[Op.or] = [
           {
@@ -266,7 +257,6 @@ module.exports = {
         is_arsip,
       } = req.body;
 
-      // 1. Cari data lama
       const data = await Outmails.findOne({
         where: {
           id,
@@ -284,11 +274,9 @@ module.exports = {
           .json(response(404, "Surat keluar tidak ditemukan"));
       }
 
-      // 2. Deklarasikan file baru / file lama di awal
       const oldFile = data.file;
       const newFile = req.file ? req.file.filename : oldFile;
 
-      // 3. Validasi Field Wajib (Tanpa memaksa req.file harus selalu ada saat UPDATE)
       if (
         !no_mail ||
         !date_mail ||
@@ -298,10 +286,10 @@ module.exports = {
         !information ||
         !tembusan ||
         !classification ||
-        !newFile // Memastikan minimal ada file lama ATAU file baru
+        !newFile
       ) {
         if (req.file) {
-          deleteFile(req.file.filename); // Gunakan req.file.filename
+          deleteFile(req.file.filename);
         }
 
         return res
@@ -314,7 +302,6 @@ module.exports = {
           );
       }
 
-      // 4. Validasi classification
       if (
         classification &&
         !["Internal", "External"].includes(classification)
@@ -329,8 +316,7 @@ module.exports = {
             response(400, "Classification hanya boleh Internal atau External"),
           );
       }
-
-      // 5. Cek nomor surat unik
+      
       const existingMail = await Outmails.findOne({
         where: {
           no_mail: no_mail.trim(),
