@@ -137,7 +137,7 @@ module.exports = {
             deleted_at: null,
             createdAt: {
               [Op.gte]: startOfDay,
-              [Op.lt]: endOfDay,
+              [Op.lt]: endOfDay,       
             },
           },
         });
